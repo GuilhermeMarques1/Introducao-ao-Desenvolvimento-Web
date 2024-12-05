@@ -16,15 +16,22 @@ server.set('view engine', 'ejs');
 server.use(express.static('public'));
 
 server.get('/', async (request, response) => {
-    response.send(await readFile('./index.html', 'utf8'));
+    const recipes = await client.db(dataBaseName).collection(collectionName).find().toArray();
+    // response.send(await readFile('./index.ejs', 'utf8'));
+    response.render('index', {recipes})
 });
 
 server.get('/receitas*', async (request, response) => {
     const name = request.path.split("/").pop();
     upperName = name.charAt(0).toUpperCase() + name.slice(1);
     data = await client.db(dataBaseName).collection(collectionName).findOne({ nome: upperName });
-    data.imagem = "data:image/svg+xml;base64, " + data.imagem;
-    response.render('recipe', data);
+
+    if(data) {
+        data.imagem = "data:image/svg+xml;base64, " + data.imagem;
+        response.render('recipe', data);
+    } else {
+        response.status(404).send("Receita não encontrada");
+    }
 });
 
 server.use(async (request, response) => {

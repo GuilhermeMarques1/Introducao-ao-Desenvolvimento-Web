@@ -13,7 +13,6 @@ COPY receitas receitas
 COPY views views
 
 COPY 404.html 404.html
-COPY index.html index.html
 COPY app.js app.js
 
 EXPOSE 8080
